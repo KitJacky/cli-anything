@@ -340,11 +340,16 @@ def embed():
 
 @embed.command("text")
 @click.option("--model", "-m", "model_name", required=True, help="Model name")
-@click.option("--input", "-i", "input_text", required=True, help="Text to embed")
+@click.option(
+    "--input", "-i", "input_texts",
+    multiple=True, required=True,
+    help="Text to embed. Repeat for batch embeddings.",
+)
 @handle_error
-def embed_text(model_name, input_text):
+def embed_text(model_name, input_texts):
     """Generate embeddings for text."""
-    result = embed_mod.embed(_host, model_name, input_text)
+    payload = list(input_texts)
+    result = embed_mod.embed(_host, model_name, payload[0] if len(payload) == 1 else payload)
     if _json_output:
         output(result)
     else:
